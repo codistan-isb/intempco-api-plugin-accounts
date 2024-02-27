@@ -110,8 +110,13 @@ const inputSchema = new SimpleSchema({
  */
 export default async function updateAccount(context, input) {
   inputSchema.validate(input);
-  const { appEvents, collections, accountId: accountIdFromContext, userId } = context;
-  const { Accounts } = collections;
+  const {
+    appEvents,
+    collections,
+    accountId: accountIdFromContext,
+    userId,
+  } = context;
+  const { Accounts, users } = collections;
   const {
     accountId: providedAccountId,
     bio,
@@ -146,7 +151,10 @@ export default async function updateAccount(context, input) {
 
   console.log("After account id check ", accountId);
 
-  const account = await Accounts.findOne({ _id: accountId }, { projection: { userId: 1 } });
+  const account = await Accounts.findOne(
+    { _id: accountId },
+    { projection: { userId: 1 } }
+  );
   if (!account) throw new ReactionError("not-found", "No account found");
 
   if (providedAccountId) {
@@ -154,13 +162,18 @@ export default async function updateAccount(context, input) {
     await context.validatePermissions(`reaction:legacy:accounts`, "create");
   } else {
     console.log("2");
-    await context.validatePermissions(`reaction:legacy:accounts:${accountId}`, "update", {
-      owner: account.userId,
-    });
+    await context.validatePermissions(
+      `reaction:legacy:accounts:${accountId}`,
+      "update",
+      {
+        owner: account.userId,
+      }
+    );
   }
 
   const updates = {};
   const updatedFields = [];
+  let userUpdate = {};
 
   if (accountIdFromContext) {
     if (typeof isDeleted === "Boolead" || isDeleted === null) {
@@ -170,7 +183,10 @@ export default async function updateAccount(context, input) {
 
   if (typeof currencyCode === "string" || currencyCode === null) {
     if (currencyCode !== null && !CurrencyDefinitions[currencyCode]) {
-      throw new ReactionError("invalid-argument", `No currency has code "${currencyCode}"`);
+      throw new ReactionError(
+        "invalid-argument",
+        `No currency has code "${currencyCode}"`
+      );
     }
 
     updates["profile.currency"] = currencyCode;
@@ -180,11 +196,13 @@ export default async function updateAccount(context, input) {
   if (typeof firstName === "string" || firstName === null) {
     updates["profile.firstName"] = firstName;
     updatedFields.push("firstName");
+    userUpdate.firstName = firstName;
   }
 
   if (typeof lastName === "string" || lastName === null) {
     updates["profile.lastName"] = lastName;
     updatedFields.push("lastName");
+    userUpdate.lastName = lastName;
   }
 
   if (typeof name === "string" || name === null) {
@@ -218,6 +236,7 @@ export default async function updateAccount(context, input) {
     // For some reason we store name in two places. Should fix eventually.
     updates.username = username;
     updates["profile.username"] = username;
+    userUpdate.username = username;
     updatedFields.push("username");
   }
 
@@ -277,9 +296,11 @@ export default async function updateAccount(context, input) {
   }
 
   if (updatedFields.length === 0) {
-    throw new ReactionError("invalid-argument", "At least one field to update is required");
+    throw new ReactionError(
+      "invalid-argument",
+      "At least one field to update is required"
+    );
   }
-
   const modifier = {
     $set: {
       ...updates,
@@ -288,7 +309,25 @@ export default async function updateAccount(context, input) {
   };
 
   Account.validate(modifier, { modifier: true });
-
+  if (userUpdate) {
+    // console.log("userUpdate for user name and password", userUpdate);
+    const modifier = {
+      $set: {
+        ...userUpdate,
+        updatedAt: new Date(),
+      },
+    };
+    let userUpdated = await users.findOneAndUpdate(
+      {
+        _id: accountId,
+      },
+      modifier,
+      {
+        returnOriginal: false,
+      }
+    );
+    // console.log("Updated user is ", userUpdated);
+  }
   const { value: updatedAccount } = await Accounts.findOneAndUpdate(
     {
       _id: accountId,

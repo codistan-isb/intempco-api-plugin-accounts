@@ -114,5 +114,5 @@
   "sideEffects": false,
   "type": "module",
   "url": "https://github.com/reactioncommerce/api-plugin-example",
-  "version": "0.0.0-development"
+  "version": "0.0.1-development"
 }
