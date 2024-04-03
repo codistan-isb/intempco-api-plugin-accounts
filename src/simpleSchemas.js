@@ -477,6 +477,14 @@ export const Account = new SimpleSchema({
     type: Boolean,
     optional: true,
   },
+  profileImage: {
+    type: String,
+    optional: true,
+  },
+  userRole: {
+    type: String,
+    optional: true,
+  },
 });
 
 /**

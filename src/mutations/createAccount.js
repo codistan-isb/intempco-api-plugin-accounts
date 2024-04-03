@@ -24,7 +24,14 @@ export default async function createAccount(context, input) {
     userId: authUserId,
   } = context;
 
-  const { emails, name = null, profile, shopId = null, userId } = input;
+  const {
+    emails,
+    name = null,
+    profile,
+    shopId = null,
+    userId,
+    profileImage,
+  } = input;
 
   await context.validatePermissions("reaction:legacy:accounts", "create", {
     shopId,
@@ -46,6 +53,7 @@ export default async function createAccount(context, input) {
     updatedAt: createdAt,
     userId,
     isDeleted: false,
+    profileImage,
   };
 
   let groups = new Set();
