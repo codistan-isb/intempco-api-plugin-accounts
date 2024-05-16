@@ -157,6 +157,7 @@ export default async function updateAccount(context, input) {
   );
   if (!account) throw new ReactionError("not-found", "No account found");
 
+  
   if (providedAccountId) {
     console.log("1");
     await context.validatePermissions(`reaction:legacy:accounts`, "create");
@@ -175,9 +176,12 @@ export default async function updateAccount(context, input) {
   const updatedFields = [];
   let userUpdate = {};
 
+  console.log("isDeleted", isDeleted, typeof isDeleted)
+
   if (accountIdFromContext) {
-    if (typeof isDeleted === "Boolead" || isDeleted === null) {
-      updatedFields["isDeleted"] = isDeleted;
+    if (typeof isDeleted === "boolean" || isDeleted === null) {
+      updates["isDeleted"]= isDeleted;
+      updatedFields.push("isDeleted")
     }
   }
 

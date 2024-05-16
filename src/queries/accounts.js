@@ -58,7 +58,7 @@ export default async function accounts(context, input) {
   } else if (notInAnyGroups) {
     selector.groups = { $in: [null, []] };
   }
-
+  selector['isDeleted'] = false
   console.log("Selecter is ", selector);
 
   return Accounts.find(selector);

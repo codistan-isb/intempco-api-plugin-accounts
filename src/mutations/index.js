@@ -40,7 +40,6 @@ export default {
   setAccountDefaultEmail,
   updateAccount,
   updateAccountAddressBookEntry,
-  updateAccountGroup,
   updateAdminUIAccess,
   updateGroupsForAccounts,
   deleteAccountCheck,
