@@ -30,6 +30,8 @@ export default {
   zipcode: (account) => account.profile.zipcode,
   telephone1: (account) => account.profile.telephone1,
   telephone2: (account) => account.profile.telephone2,
+  picture: (account) => account.profile.picture,
+  dob: (account) => account.profile.dob,
   preferences: (account) => _.get(account, "profile.preferences"),
   primaryEmailAddress: (account) => {
     const primaryRecord = (account.emails || []).find((record) => record.provides === "default");

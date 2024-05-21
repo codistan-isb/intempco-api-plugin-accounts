@@ -14,6 +14,8 @@ export default async function userAccountQuery(context, id) {
   const { Accounts } = collections;
 
   const account = await Accounts.findOne({ _id: id });
+
+  console.log("USER ACCOUNT", account);
   if (!account) throw new ReactionError("not-found", "No account found");
 
   // Check to make sure current user has permissions to view queried user
