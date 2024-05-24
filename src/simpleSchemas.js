@@ -284,6 +284,11 @@ export const Profile = new SimpleSchema({
     type: String,
     optional: true,
   },
+
+  dob: {
+    type: String,
+    optional: true,
+  },
   bio: {
     type: String,
     optional: true,
