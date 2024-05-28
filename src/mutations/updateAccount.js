@@ -92,6 +92,10 @@ const inputSchema = new SimpleSchema({
     type: String,
     optional: true,
   },
+  dob: {
+    type: String,
+    optional: true,
+  }
 });
 
 /**
@@ -106,6 +110,7 @@ const inputSchema = new SimpleSchema({
  * @param {String} [input.language] - Language
  * @param {String} [input.lastName] - Last name
  * @param {String} [input.name] - Name
+ * @param {String} [input.dob]
  * @returns {Promise<Object>} Updated account document
  */
 export default async function updateAccount(context, input) {
@@ -140,6 +145,7 @@ export default async function updateAccount(context, input) {
     zipcode,
     telephone1,
     telephone2,
+    dob
   } = input;
 
   console.log("in update account providedAccountId ", providedAccountId);
@@ -157,7 +163,7 @@ export default async function updateAccount(context, input) {
   );
   if (!account) throw new ReactionError("not-found", "No account found");
 
-  
+
   if (providedAccountId) {
     console.log("1");
     await context.validatePermissions(`reaction:legacy:accounts`, "create");
@@ -176,12 +182,12 @@ export default async function updateAccount(context, input) {
   const updatedFields = [];
   let userUpdate = {};
 
-  console.log("isDeleted", isDeleted, typeof isDeleted)
+  console.log("isDeleted", isDeleted, typeof isDeleted);
 
   if (accountIdFromContext) {
     if (typeof isDeleted === "boolean" || isDeleted === null) {
-      updates["isDeleted"]= isDeleted;
-      updatedFields.push("isDeleted")
+      updates["isDeleted"] = isDeleted;
+      updatedFields.push("isDeleted");
     }
   }
 
@@ -234,6 +240,12 @@ export default async function updateAccount(context, input) {
   if (typeof picture === "string" || picture === null) {
     updates["profile.picture"] = picture;
     updatedFields.push("picture");
+  }
+
+  if (typeof dob === "string" || dob === null) {
+    updates["profile.dob"] = dob;
+    userUpdate.dob = dob;
+    updatedFields.push("dob");
   }
 
   if (typeof username === "string" || username === null) {
@@ -305,6 +317,7 @@ export default async function updateAccount(context, input) {
       "At least one field to update is required"
     );
   }
+
   const modifier = {
     $set: {
       ...updates,

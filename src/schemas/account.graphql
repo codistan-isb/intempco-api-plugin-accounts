@@ -45,7 +45,7 @@ input CreateAccountInput {
   "URL of picture to display on profile"
   picture: String
 
-  dob: Date
+  dob: String
 
   "The ID of the shop this account will belong to"
   shopId: ID!
@@ -77,7 +77,7 @@ input CreateAccountInput {
 
   zipcode: String
 
-  # dob: Date
+  # dob: String
 }
 
 "Describes changes that should be applied to one of the addresses for an account"
@@ -151,7 +151,7 @@ input UpdateAccountInput {
   "URL of picture to display on profile"
   picture: String
 
-  dob: Date
+  dob: String
 
   "Username"
   username: String
@@ -295,7 +295,7 @@ type Account implements Node {
   "URL of picture to display on profile"
   picture: String
 
-  dob: Date
+  dob: String
 
   "An object storing plugin-specific preferences for this account"
   preferences: JSONObject
